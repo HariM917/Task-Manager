@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TaskFlow Dashboard — Manage and track all your tasks in one place.">
+  <title>TaskFlow — Dashboard</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/animations.css">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="spinner spinner-lg"></div>
+  </div>
+
+  <div class="dashboard" id="dashboardContainer" style="display: none;">
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <svg style="color: var(--accent-primary); width: 24px; height: 24px;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          TaskFlow
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-link active" data-filter="all" id="navAll">
+          <span class="sidebar-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg></span>
+          All Tasks
+          <span class="sidebar-link-count" id="countAll">0</span>
+        </a>
+        <a href="#" class="sidebar-link" data-filter="todo" id="navTodo">
+          <span class="sidebar-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 8 12 12 14 14"></polyline></svg></span>
+          To Do
+          <span class="sidebar-link-count" id="countTodo">0</span>
+        </a>
+        <a href="#" class="sidebar-link" data-filter="in-progress" id="navInProgress">
+          <span class="sidebar-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg></span>
+          In Progress
+          <span class="sidebar-link-count" id="countInProgress">0</span>
+        </a>
+        <a href="#" class="sidebar-link" data-filter="done" id="navDone">
+          <span class="sidebar-link-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></span>
+          Done
+          <span class="sidebar-link-count" id="countDone">0</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar" id="userAvatar">U</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-name" id="userName">User</div>
+            <div class="sidebar-user-email" id="userEmail">user@email.com</div>
+          </div>
+          <button class="btn-icon" id="logoutBtn" title="Sign Out" style="margin-left: auto; display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">☰</button>
+          <div class="search-container" style="max-width: 320px; flex: 1;">
+            <span class="search-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
+            <input 
+              type="text" 
+              class="search-input" 
+              id="searchInput" 
+              placeholder="Search tasks..."
+              autocomplete="off"
+            >
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="connection-status" id="connectionStatus">
+            <span class="connection-dot"></span>
+            <span id="connectionText">Connecting...</span>
+          </div>
+          <div class="view-toggle" id="viewToggle">
+            <button class="view-toggle-btn active" data-view="list" id="listViewBtn" title="List View" style="display: flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></button>
+            <button class="view-toggle-btn" data-view="kanban" id="kanbanViewBtn" title="Kanban View" style="display: flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></button>
+          </div>
+          <button class="btn btn-primary" id="addTaskBtn">
+            ＋ New Task
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Stats -->
+        <div class="stats-grid stagger-children" id="statsGrid">
+          <div class="stat-card">
+            <div class="stat-number" style="color: var(--text-primary);" id="statTotal">0</div>
+            <div class="stat-label">Total Tasks</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" style="color: var(--color-info)" id="statTodo">0</div>
+            <div class="stat-label">To Do</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" style="color: var(--color-warning)" id="statInProgress">0</div>
+            <div class="stat-label">In Progress</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" style="color: var(--color-success)" id="statDone">0</div>
+            <div class="stat-label">Completed</div>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <div class="filter-group" id="priorityFilter">
+              <button class="filter-chip active" data-priority="all">All</button>
+              <button class="filter-chip" data-priority="high"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:var(--color-danger); margin-right:4px;"></span> High</button>
+              <button class="filter-chip" data-priority="medium"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:var(--color-warning); margin-right:4px;"></span> Medium</button>
+              <button class="filter-chip" data-priority="low"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:var(--color-success); margin-right:4px;"></span> Low</button>
+            </div>
+          </div>
+          <div class="toolbar-right">
+            <select class="form-input" id="sortSelect" style="width: auto; padding: 8px 36px 8px 12px; font-size: 0.8rem;">
+              <option value="-createdAt">Newest First</option>
+              <option value="createdAt">Oldest First</option>
+              <option value="-priority">Priority ↓</option>
+              <option value="dueDate">Due Date ↑</option>
+              <option value="title">A → Z</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Task Content — List View (default) -->
+        <div id="listView">
+          <div class="task-list stagger-children" id="taskList">
+            <!-- Tasks rendered here by JS -->
+          </div>
+        </div>
+
+        <!-- Task Content — Kanban View -->
+        <div id="kanbanView" style="display: none;">
+          <div class="kanban-board" id="kanbanBoard">
+            <div class="kanban-column" data-status="todo">
+              <div class="kanban-column-header">
+                <div class="kanban-column-title">
+                  To Do
+                  <span class="kanban-column-count" id="kanbanCountTodo">0</span>
+                </div>
+              </div>
+              <div class="kanban-tasks" id="kanbanTodo"></div>
+            </div>
+            <div class="kanban-column" data-status="in-progress">
+              <div class="kanban-column-header">
+                <div class="kanban-column-title">
+                  In Progress
+                  <span class="kanban-column-count" id="kanbanCountInProgress">0</span>
+                </div>
+              </div>
+              <div class="kanban-tasks" id="kanbanInProgress"></div>
+            </div>
+            <div class="kanban-column" data-status="done">
+              <div class="kanban-column-header">
+                <div class="kanban-column-title">
+                  Done
+                  <span class="kanban-column-count" id="kanbanCountDone">0</span>
+                </div>
+              </div>
+              <div class="kanban-tasks" id="kanbanDone"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+          <div class="empty-state-icon"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg></div>
+          <h3 class="empty-state-title">No tasks yet</h3>
+          <p class="empty-state-text">Click "New Task" to create your first task and start getting organized!</p>
+          <button class="btn btn-primary" id="emptyAddBtn">＋ Create First Task</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Task Modal -->
+  <div class="modal-backdrop" id="taskModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">New Task</h3>
+        <button class="btn-icon" id="modalCloseBtn" aria-label="Close modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="taskTitle">Title *</label>
+          <input 
+            type="text" 
+            class="form-input" 
+            id="taskTitle" 
+            placeholder="What needs to be done?" 
+            required 
+            maxlength="100"
+          >
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="taskDescription">Description</label>
+          <textarea 
+            class="form-input" 
+            id="taskDescription" 
+            placeholder="Add details about this task..." 
+            maxlength="500"
+            rows="3"
+          ></textarea>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+          <div class="form-group">
+            <label class="form-label" for="taskStatus">Status</label>
+            <select class="form-input" id="taskStatus">
+              <option value="todo">To Do</option>
+              <option value="in-progress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="taskPriority">Priority</label>
+            <select class="form-input" id="taskPriority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="taskDueDate">Due Date</label>
+          <input 
+            type="date" 
+            class="form-input" 
+            id="taskDueDate"
+          >
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="modalCancelBtn">Cancel</button>
+        <button class="btn btn-primary" id="modalSaveBtn">Create Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal-backdrop" id="deleteModal">
+    <div class="modal" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Delete Task</h3>
+        <button class="btn-icon" id="deleteModalCloseBtn" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-secondary);">Are you sure you want to delete "<strong id="deleteTaskTitle" style="color: var(--text-primary);"></strong>"? This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="deleteCancelBtn">Cancel</button>
+        <button class="btn btn-danger" id="deleteConfirmBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/websocket.js"></script>
+  <script src="js/tasks.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

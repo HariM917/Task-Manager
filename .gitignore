@@ -1,0 +1,6 @@
+node_modules/
+.env
+.DS_Store
+dns_result.txt
+resolve.js
+write_env.js
