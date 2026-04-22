@@ -11,7 +11,7 @@
  *     replace the RENDER_BACKEND_URL below with your actual Render URL.
  *     Example: https://taskflow-api.onrender.com
  */
-const RENDER_BACKEND_URL = 'https://YOUR-BACKEND.onrender.com';
+const RENDER_BACKEND_URL = 'https://task-manager-posy.onrender.com';
 
 const CONFIG = (() => {
   const isLocalhost = window.location.hostname === 'localhost' 
